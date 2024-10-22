@@ -1,9 +1,8 @@
 package com.ramsey.updater;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.Util;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -12,6 +11,8 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.gui.widget.ScrollPanel;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public class UpdateScreen extends Screen {
     private ProgressBar progressBar;
     private ErrorPanel errorPanel;
@@ -69,8 +71,12 @@ public class UpdateScreen extends Screen {
         this.progressBar = new ProgressBar(100, 120, this.width - 200, 10);
         this.errorPanel = new ErrorPanel(this.width - 100, this.height - 100, 90, 50);
 
-        this.restartButton = new Button(this.width / 2 - 135, 170, 110, 20, Component.translatable("gui.updater.install"), button -> UpdateHandler.runInstallScript());
-        this.openFolderButton = new Button(this.width / 2 + 15, 170, 110, 20, Component.translatable("gui.updater.openModsFolder"), button -> Util.getPlatform().openFile(FMLPaths.MODSDIR.get().toFile()));
+
+        this.restartButton = Button.builder(Component.translatable("gui.updater.install"), button -> UpdateHandler.runInstallScript())
+            .bounds(this.width / 2 - 135, 170, 110, 20).build();
+
+        this.openFolderButton = Button.builder(Component.translatable("gui.updater.openModsFolder"), button -> Util.getPlatform().openFile(FMLPaths.MODSDIR.get().toFile()))
+            .bounds(this.width / 2 + 15, 170, 110, 20).build();
 
         if (state == State.ERROR) {
             this.errorPanel.setContent(details);
@@ -78,23 +84,22 @@ public class UpdateScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
+    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(pGuiGraphics);
 
-        GuiComponent.drawCenteredString(pPoseStack, this.font, getMessage(), this.width / 2, 70, infoColor);
+        pGuiGraphics.drawCenteredString(this.font, getMessage(), this.width / 2, 70, infoColor);
 
         if (state == State.ERROR) {
-            this.errorPanel.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.errorPanel.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             return;
         }
 
-
         if (state == State.DONE) {
-            this.restartButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-            this.openFolderButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.restartButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            this.openFolderButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
-        this.progressBar.render(pPoseStack);
+        this.progressBar.render(pGuiGraphics);
     }
 
     private Component getMessage() {
@@ -156,16 +161,6 @@ public class UpdateScreen extends Screen {
         }
 
         @Override
-        protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
-            int y = relativeY;
-
-            for (FormattedCharSequence line : lines) {
-                drawString(poseStack, font, line, left + 10, y + 10, errorColor);
-                y += font.lineHeight;
-            }
-        }
-
-        @Override
         protected int getScrollAmount() {
             return font.lineHeight * 3;
         }
@@ -173,6 +168,16 @@ public class UpdateScreen extends Screen {
         @Override
         protected int getContentHeight() {
             return font.lineHeight * lines.size();
+        }
+
+        @Override
+        protected void drawPanel(GuiGraphics guiGraphics, int entryRight, int relativeY, Tesselator tesselator, int mouseX, int mouseY) {
+            int y = relativeY;
+
+            for (FormattedCharSequence line : lines) {
+                guiGraphics.drawString(font, line, left + 10, y + 10, errorColor);
+                y += font.lineHeight;
+            }
         }
 
         @Override
@@ -185,7 +190,7 @@ public class UpdateScreen extends Screen {
         }
     }
 
-    private static class ProgressBar extends GuiComponent {
+    private static class ProgressBar {
         public float progress;
 
         private final int x;
@@ -206,13 +211,13 @@ public class UpdateScreen extends Screen {
             this.height = height;
         }
 
-        public void render(@NotNull PoseStack pPoseStack) {
-            GuiComponent.fill(pPoseStack, x, y, x + width, y + outlineThickness, outlineColor);
-            GuiComponent.fill(pPoseStack, x, y + height - outlineThickness, x + width, y + height, outlineColor);
-            GuiComponent.fill(pPoseStack, x, y + outlineThickness, x + outlineThickness, y + height - outlineThickness, outlineColor);
-            GuiComponent.fill(pPoseStack, x + width - outlineThickness, y + outlineThickness, x + width, y + height - outlineThickness, outlineColor);
+        public void render(GuiGraphics pGraphics) {
+            pGraphics.fill(x, y, x + width, y + outlineThickness, outlineColor);
+            pGraphics.fill(x, y + height - outlineThickness, x + width, y + height, outlineColor);
+            pGraphics.fill(x, y + outlineThickness, x + outlineThickness, y + height - outlineThickness, outlineColor);
+            pGraphics.fill(x + width - outlineThickness, y + outlineThickness, x + width, y + height - outlineThickness, outlineColor);
 
-            GuiComponent.fill(pPoseStack, x + innerMargin, y + innerMargin, x + (int) ((width - innerMargin) * progress), y + height - innerMargin, fillColor);
+            pGraphics.fill(x + innerMargin, y + innerMargin, x + (int) ((width - innerMargin) * progress), y + height - innerMargin, fillColor);
         }
     }
 

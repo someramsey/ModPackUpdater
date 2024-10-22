@@ -1,6 +1,8 @@
 package com.ramsey.updater;
 
 import com.mojang.logging.LogUtils;
+import com.ramsey.updater.versioning.NetworkHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -21,6 +23,11 @@ public class Main {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        NetworkHandler.register();
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> UpdateChecker::checkUpdateState);
+    }
+
+    public static ResourceLocation resource(String path) {
+        return new ResourceLocation(MODID, path);
     }
 }

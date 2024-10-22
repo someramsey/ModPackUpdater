@@ -1,6 +1,5 @@
 package com.ramsey.updater;
 
-import com.ramsey.updater.extractor.ExtractorTypes;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,8 +18,9 @@ public class Config {
     private static final ForgeConfigSpec.ConfigValue<Integer> FetchTimeout = BUILDER.comment("The timeout for the connection when fetching the update info")
         .define("fetch_timeout", 5000);
 
-    private static final ForgeConfigSpec.ConfigValue<ExtractorTypes> ExtractorType = BUILDER.comment("The decompression algorithm used to extract the modpack files")
-        .defineEnum("decompression", ExtractorTypes.Zip);
+    //TODO: Reimplement extractor type
+//    private static final ForgeConfigSpec.ConfigValue<ExtractorTypes> ExtractorType = BUILDER.comment("The decompression algorithm used to extract the modpack files")
+//        .defineEnum("decompression", ExtractorTypes.Zip);
 
     private static final ForgeConfigSpec.ConfigValue<String> RootDir = BUILDER.comment("The root directory used for operations")
         .define("root_dir", ".\\updater");
@@ -44,7 +44,8 @@ public class Config {
 
     public static String fetchUrl;
     public static int fetchTimeout;
-    public static ExtractorTypes extractorType;
+    //TODO: Reimplement extractor type
+//    public static ExtractorTypes extractorType;
     public static Path rootDir;
     public static Path installDir;
     public static Path backupsDir;
@@ -56,7 +57,9 @@ public class Config {
     static void onLoad(final ModConfigEvent event) {
         fetchUrl = FetchUrl.get();
         fetchTimeout = FetchTimeout.get();
-        extractorType = ExtractorType.get();
+
+        //TODO: Reimplement extractor type
+//        extractorType = ExtractorType.get();
 
         Path gameDir = FMLPaths.GAMEDIR.get();
 

@@ -1,5 +1,7 @@
 package com.ramsey.updater.extractor;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate.DeflateCompressorInputStream;
@@ -12,6 +14,7 @@ import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 
 import java.util.function.Supplier;
 
+@OnlyIn(Dist.CLIENT)
 public enum ExtractorTypes {
     Zip(ZipExtractor::new),
     BZip2(BZip2CompressorInputStream::new),

@@ -1,5 +1,8 @@
 package com.ramsey.updater.extractor;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -9,6 +12,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@OnlyIn(Dist.CLIENT)
 public class ZipExtractor implements Extractor {
     @Override
     public void extract(Path source, Path destination, ProgressChangeListener listener) throws IOException {

@@ -1,5 +1,7 @@
 package com.ramsey.updater.extractor;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -11,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+@OnlyIn(Dist.CLIENT)
 public class TarExtractor<T extends CompressorInputStream> implements Extractor {
     private final CompressionStreamFactory<T> compressorStreamFactory;
 

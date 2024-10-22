@@ -1,7 +1,10 @@
 package com.ramsey.updater;
 
 import com.ramsey.updater.extractor.Extractor;
+import com.ramsey.updater.extractor.ExtractorTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 
@@ -20,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 import java.util.zip.ZipException;
 
+@OnlyIn(Dist.CLIENT)
 public abstract class UpdateHandler {
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -71,7 +75,7 @@ public abstract class UpdateHandler {
                 backup();
                 updateScreen.updateComplete();
             } catch (Exception exception) {
-                if(exception instanceof ZipException) {
+                if (exception instanceof ZipException) {
                     onFail(new Exception("The downloaded file might be corrupted or be using a different compression format. Check mod config to change the compression format"));
                     return;
                 }
@@ -128,7 +132,9 @@ public abstract class UpdateHandler {
     private static void extract() throws IOException {
         updateScreen.displayProgress("Extracting", 0);
 
-        Extractor extractor = Config.extractorType.createExtractor();
+//    TODO: Reimplement extractor type
+//        Extractor extractor = Config.extractorType.createExtractor();
+        Extractor extractor = ExtractorTypes.Zip.createExtractor();
 
         extractor.extract(packagePath, Config.installDir, (current, total) -> updateScreen.displayProgress(
             "Extracting (" + current + "/" + total + ")",
